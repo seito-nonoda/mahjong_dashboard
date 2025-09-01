@@ -7,28 +7,23 @@ import streamlit as st
 # constant values
 ## path
 DATA_DIR_NAME = "data"
-USER_DATA = "users.json"
-YOMMA_DATA = "yomma.json"
+USER_DATA = "users.csv"
+YOMMA_DATA = "yomma.csv"
 ## column name
 ID = "id"
 DISPLAY_NAME = "display_name"
 DATE = "date"
 DATE_JP = "日付"
-## dictonary
-
-
-# methods
-
 
 
 # read data
 data_dir =  Path(__file__).parent.parent / DATA_DIR_NAME
 ## user data
 user_data_path = data_dir / USER_DATA
-df_user = pd.read_json(user_data_path)
+df_user = pd.read_csv(user_data_path)
 ## score data
 yomma_data_path = data_dir / YOMMA_DATA
-df_yomma = pd.read_json(yomma_data_path)
+df_yomma = pd.read_csv(yomma_data_path)
 
 
 # create user list
@@ -46,7 +41,7 @@ for i in range(4):
 score_records = []
 for _, row in df_yomma.iterrows():
     score_record = {
-        DATE_JP: row[DATE].strftime("%Y/%m/%d"),
+        DATE_JP: row[DATE],
     }
     for player, score in player_score_dict_4.items():
         player_name = df_user.loc[df_user[ID] == row[player], DISPLAY_NAME].tolist()[0]
@@ -59,7 +54,6 @@ df_score_table_yomma = pd.DataFrame(score_records)
 
 # display title and description
 st.title("📄スコア表")
-st.write("スコア表が見られます")
 
 
 # select user

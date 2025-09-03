@@ -10,7 +10,17 @@ def confirm_registration(title, func, arg):
     with yes:
         if st.button("はい"):
             func(arg)
-            st.write(f"{title}登録完了")
+            st.session_state.display_confirmation = False
+            st.session_state.display_notification = True
+            st.rerun()
     with no:
         if st.button("いいえ"):
+            st.session_state.display_confirmation = False
             st.rerun()
+
+
+# notify registration
+@st.dialog("登録完了")
+def notify_registration(title):
+    st.write(f"{title}登録完了")
+    st.session_state.display_notification = False

@@ -110,6 +110,7 @@ else:
 
 
 # register scores
+records = None
 if df_input_score is not None:
     # TODO: validation of scores
     if st.button(f"{SCORE}登録"):
@@ -126,4 +127,18 @@ if df_input_score is not None:
             [created_date] +
             [""] for score in df_input_score
         ]
-        dialogs.confirm_registration(SCORE, register_yomma_record, records)
+        st.session_state.display_confirmation = True
+
+
+# display notification dialog
+if "display_confirmation" not in st.session_state:
+    st.session_state.display_confirmation = False
+
+if "display_notification" not in st.session_state:
+    st.session_state.display_notification = False
+
+if st.session_state.display_confirmation:
+    dialogs.confirm_registration(SCORE, register_yomma_record, records)
+
+if st.session_state.display_notification:
+    dialogs.notify_registration(SCORE)

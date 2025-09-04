@@ -42,6 +42,11 @@ def register_yomma_record(records):
     return
 
 
+def validate_sum_of_scores():
+    non_zero_index = [i for i, row in enumerate(df_input_score) if sum(row) != 0]
+    return non_zero_index
+
+
 # read data
 data_dir =  Path(__file__).parent.parent / DATA_DIR_NAME
 ## user data
@@ -80,7 +85,11 @@ for key in player_array:
     user_option[key] =  st.column_config.SelectboxColumn(options=user_list)
 
 df_player = pd.DataFrame(player_dict)
-df_input_user = st.data_editor(df_player, num_rows="fixed", column_config=user_option, hide_index=True)
+df_input_user = st.data_editor(df_player,
+    num_rows="fixed",
+    column_config=user_option,
+    hide_index=True
+)
 
 
 # validation of user input
@@ -104,7 +113,9 @@ if is_user_set:
             score_dict[user] = []
 
         df_score = pd.DataFrame(score_dict)
-        df_input_score = st.data_editor(df_score, num_rows="dynamic").values.tolist()
+        df_input_score = st.data_editor(df_score,
+            num_rows="dynamic",
+        ).values.tolist()
 else:
     st.write("ユーザを入力してください")
 
@@ -112,22 +123,29 @@ else:
 # register scores
 records = None
 if df_input_score is not None:
-    # TODO: validation of scores
     if st.button(f"{SCORE}登録"):
-        id = str(uuid.uuid4())
-        input_userid_array = [df_user.loc[df_user[DISPLAY_NAME] == user, ID].tolist()[0] for user in input_user_array]
-        created_date = datetime.retrieve_date_today()
-        records = [
-            [id] +
-            input_userid_array +
-            score +
-            [place_input] +
-            [date_input] +
-            [rate_input] +
-            [created_date] +
-            [""] for score in df_input_score
-        ]
-        st.session_state.display_confirmation = True
+        validation_result = validate_sum_of_scores()
+        print("result: ", validation_result)
+        validation_OK = len(validation_result) == 0
+        if validation_OK:
+            id = str(uuid.uuid4())
+            input_userid_array = [df_user.loc[df_user[DISPLAY_NAME] == user, ID].tolist()[0] for user in input_user_array]
+            created_date = datetime.retrieve_date_today()
+            records = [
+                [id] +
+                input_userid_array +
+                score +
+                [place_input] +
+                [date_input] +
+                [rate_input] +
+                [created_date] +
+                [""] for score in df_input_score
+            ]
+            st.session_state.display_confirmation = True
+        else:
+            print("else")
+            st.session_state.validation_result = validation_result
+            st.session_state.display_validation_error = True
 
 
 # display notification dialog
@@ -137,8 +155,14 @@ if "display_confirmation" not in st.session_state:
 if "display_notification" not in st.session_state:
     st.session_state.display_notification = False
 
+if "display_validation_error" not in st.session_state:
+    st.session_state.display_validation_error = False
+
 if st.session_state.display_confirmation:
     dialogs.confirm_registration(SCORE, register_yomma_record, records)
 
 if st.session_state.display_notification:
     dialogs.notify_registration(SCORE)
+
+if st.session_state.display_validation_error:
+    dialogs.notify_validation_error(st.session_state.validation_result)

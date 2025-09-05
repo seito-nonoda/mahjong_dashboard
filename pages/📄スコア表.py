@@ -60,6 +60,12 @@ st.title("📄スコア表")
 users_to_show = st.multiselect('表示する人を選択', options=user_list, default=user_list)
 
 
+# select date
+date_options = df_yomma[DATE].drop_duplicates().sort_values(ascending=False)
+selected_date = st.selectbox("日付選択", date_options)
+
+
 # display table
 columns_to_show = [DATE_JP] + users_to_show
-st.dataframe(df_score_table_yomma[columns_to_show], hide_index=True)
+df_score_table_date = df_score_table_yomma[df_score_table_yomma[DATE_JP] == selected_date]
+st.dataframe(df_score_table_date[columns_to_show], hide_index=True)

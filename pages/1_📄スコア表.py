@@ -1,7 +1,10 @@
-from pathlib import Path
-
 import pandas as pd
 import streamlit as st
+
+import firebase_admin
+from firebase_admin import credentials
+
+from util import db_client
 
 
 # constant values
@@ -14,6 +17,11 @@ ID = "id"
 DISPLAY_NAME = "display_name"
 DATE = "date"
 DATE_JP = "日付"
+
+
+# create database client
+cred = credentials.Certificate("path/to/serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
 
 
 # read data

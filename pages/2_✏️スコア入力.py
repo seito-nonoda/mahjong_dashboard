@@ -1,11 +1,9 @@
-import csv
-from pathlib import Path
 import uuid
 
 import pandas as pd
 import streamlit as st
 
-from util import datetime, dialogs
+from util import datetime, db_client, dialogs
 
 
 # constant values
@@ -13,9 +11,17 @@ from util import datetime, dialogs
 DATA_DIR_NAME = "data"
 USER_DATA = "users.csv"
 YOMMA_DATA = "yomma.csv"
+## document name
+USER_TABLE = "users"
+SCORE_TABLE = "scores"
 ## column name
 ID = "id"
 DISPLAY_NAME = "display_name"
+PLACE = "place"
+DATE = "date"
+RATE = "rate"
+CREATED = "created_at"
+UPDATED = "updated_at"
 DATE_JP = "日付"
 YEAR = "年"
 MONTH = "月"
@@ -28,38 +34,48 @@ PLACE_LIST = [
 ]
 ## others
 PLAYER = "player"
-SCORE = "スコア"
+SCORE = "score"
+SCORE_JP = "スコア"
 NUM_PLAYER = 4
 
 
 # methods
 def register_yomma_record(records):
-    print(records)
-    output_path = data_dir / YOMMA_DATA
-    with open(output_path,  "a", newline="", encoding="utf-8")as f:
-        writer = csv.writer(f)
-        writer.writerows(records)
+    batch = db.batch()
+    for record in records:
+        record_ref = db.collection(SCORE_TABLE).document(record[ID])
+        del record[ID]
+        batch.set(record_ref, record)
+
+    batch.commit()
     return
 
 
 def validate_sum_of_scores():
-    non_zero_index = [i for i, row in enumerate(df_input_score) if sum(row) != 0]
+    non_zero_index = [i for i, row in enumerate(input_score_array) if sum(row) != 0]
     return non_zero_index
 
 
-# read data
-data_dir =  Path(__file__).parent.parent / DATA_DIR_NAME
-## user data
-user_data_path = data_dir / USER_DATA
-df_user = pd.read_csv(user_data_path)
+# create db client
+db = db_client.create_db_client()
 
+
+# read user data
+users = db.collection(USER_TABLE).stream()
+users_array = []
+for user in users:
+    dict = user.to_dict()
+    dict[ID] = user.id
+    users_array.append(dict)
+
+df_user = pd.DataFrame(users_array)
 
 # create user list
 user_list = df_user[DISPLAY_NAME].to_list()
 
 
 # display title and description
-st.title(f"✏️{SCORE}入力")
+st.title(f"✏️{SCORE_JP}入力")
 
 
 # input date
@@ -100,9 +116,9 @@ is_duplicated = len(input_user_array) != len(set(input_user_array))
 
 
 # input scores
-st.write(f"{SCORE}入力")
+st.write(f"{SCORE_JP}入力")
 
-df_input_score = None
+input_score_array = None
 if is_user_set:
     if is_duplicated:
         st.write("ユーザに重複があります")
@@ -113,7 +129,7 @@ if is_user_set:
             score_dict[user] = []
 
         df_score = pd.DataFrame(score_dict)
-        df_input_score = st.data_editor(df_score,
+        input_score_array = st.data_editor(df_score,
             num_rows="dynamic",
         ).values.tolist()
 else:
@@ -121,29 +137,31 @@ else:
 
 
 # register scores
-records = None
-if df_input_score is not None:
-    if st.button(f"{SCORE}登録"):
+score_array = [SCORE_JP + str(i+1) for i in range(NUM_PLAYER)]
+records = []
+if input_score_array is not None:
+    if st.button(f"{SCORE_JP}登録"):
+        # TODO: 場所が選択されていないときに確認する
         validation_result = validate_sum_of_scores()
-        print("result: ", validation_result)
         validation_OK = len(validation_result) == 0
         if validation_OK:
-            id = str(uuid.uuid4())
-            input_userid_array = [df_user.loc[df_user[DISPLAY_NAME] == user, ID].tolist()[0] for user in input_user_array]
-            created_date = datetime.retrieve_date_today()
-            records = [
-                [id] +
-                input_userid_array +
-                score +
-                [place_input] +
-                [date_input] +
-                [rate_input] +
-                [created_date] +
-                [""] for score in df_input_score
-            ]
+            for score_row in input_score_array:
+                record = {}
+
+                record[ID] = str(uuid.uuid4())
+                for i, player in enumerate(player_array):
+                    record[player] = df_user.loc[df_user[DISPLAY_NAME] == input_user_array[i], ID].tolist()[0]
+                for i, score in enumerate(score_array):
+                    record[score] = score_row[i]
+                record[PLACE] = place_input
+                record[DATE] = date_input
+                record[RATE] = rate_input
+                record[CREATED] = datetime.retrieve_date_today()
+                record[UPDATED] = datetime.retrieve_date_today()
+
+                records.append(record)
             st.session_state.display_confirmation = True
         else:
-            print("else")
             st.session_state.validation_result = validation_result
             st.session_state.display_validation_error = True
 
@@ -159,10 +177,10 @@ if "display_validation_error" not in st.session_state:
     st.session_state.display_validation_error = False
 
 if st.session_state.display_confirmation:
-    dialogs.confirm_registration(SCORE, register_yomma_record, records)
+    dialogs.confirm_registration(SCORE_JP, register_yomma_record, records)
 
 if st.session_state.display_notification:
-    dialogs.notify_registration(SCORE)
+    dialogs.notify_registration(SCORE_JP)
 
 if st.session_state.display_validation_error:
     dialogs.notify_validation_error(st.session_state.validation_result)

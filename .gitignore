@@ -1,3 +1,3 @@
 .venv
 util/__pycache__
-secret/mahjong*.json
+secret/*

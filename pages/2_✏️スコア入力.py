@@ -13,7 +13,7 @@ USER_DATA = "users.csv"
 YOMMA_DATA = "yomma.csv"
 ## document name
 USER_TABLE = "users"
-SCORE_TABLE = "scores"
+SCORE_TABLE = "yomma_scores"
 ## column name
 ID = "id"
 DISPLAY_NAME = "display_name"
@@ -137,7 +137,7 @@ else:
 
 
 # register scores
-score_array = [SCORE_JP + str(i+1) for i in range(NUM_PLAYER)]
+score_array = [SCORE + str(i+1) for i in range(NUM_PLAYER)]
 records = []
 if input_score_array is not None:
     if st.button(f"{SCORE_JP}登録"):

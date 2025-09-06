@@ -12,6 +12,9 @@ from util import db_client
 DATA_DIR_NAME = "data"
 USER_DATA = "users.csv"
 YOMMA_DATA = "yomma.csv"
+## document name
+USER_TABLE = "users"
+SCORE_TABLE = "yomma_scores"
 ## column name
 ID = "id"
 DISPLAY_NAME = "display_name"
@@ -19,19 +22,30 @@ DATE = "date"
 DATE_JP = "日付"
 
 
-# create database client
-cred = credentials.Certificate("path/to/serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
+# create db client
+db = db_client.create_db_client()
 
 
 # read data
-data_dir =  Path(__file__).parent.parent / DATA_DIR_NAME
 ## user data
-user_data_path = data_dir / USER_DATA
-df_user = pd.read_csv(user_data_path)
+users = db.collection(USER_TABLE).stream()
+users_array = []
+for user in users:
+    dict = user.to_dict()
+    dict[ID] = user.id
+    users_array.append(dict)
+
+df_user = pd.DataFrame(users_array)
 ## score data
-yomma_data_path = data_dir / YOMMA_DATA
-df_yomma = pd.read_csv(yomma_data_path)
+yomma_scores = db.collection(SCORE_TABLE).stream()
+scores_array = []
+for score in yomma_scores:
+    dict = score.to_dict()
+    dict[ID] = score.id
+    scores_array.append(dict)
+
+df_yomma_score = pd.DataFrame(scores_array)
+df_yomma = pd.DataFrame(df_yomma_score)
 
 
 # create user list
@@ -42,8 +56,8 @@ user_list = df_user[DISPLAY_NAME].to_list()
 ## define dictionary
 player_score_dict_4 = {}
 for i in range(4):
-    key = "_".join(["player", str(i+1)])
-    value = "_".join(["score", str(i+1)])
+    key = "player" + str(i+1)
+    value = "score" + str(i+1)
     player_score_dict_4[key] = value
 ## create dataframe
 score_records = []

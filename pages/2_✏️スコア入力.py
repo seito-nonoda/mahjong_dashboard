@@ -7,10 +7,6 @@ from util import datetime, db_client, dialogs
 
 
 # constant values
-## path
-DATA_DIR_NAME = "data"
-USER_DATA = "users.csv"
-YOMMA_DATA = "yomma.csv"
 ## document name
 USER_TABLE = "users"
 SCORE_TABLE = "yomma_scores"
@@ -43,8 +39,8 @@ NUM_PLAYER = 4
 def register_yomma_record(records):
     batch = db.batch()
     for record in records:
-        record_ref = db.collection(SCORE_TABLE).document(record[ID])
-        del record[ID]
+        id = str(uuid.uuid4())
+        record_ref = db.collection(SCORE_TABLE).document(id)
         batch.set(record_ref, record)
 
     batch.commit()
@@ -146,18 +142,17 @@ if input_score_array is not None:
         validation_OK = len(validation_result) == 0
         if validation_OK:
             for score_row in input_score_array:
-                record = {}
-
-                record[ID] = str(uuid.uuid4())
+                record = {
+                    PLACE: place_input,
+                    DATE: date_input,
+                    RATE: rate_input,
+                    CREATED: datetime.retrieve_date_today(),
+                    UPDATED: datetime.retrieve_date_today(),
+                }
                 for i, player in enumerate(player_array):
                     record[player] = df_user.loc[df_user[DISPLAY_NAME] == input_user_array[i], ID].tolist()[0]
                 for i, score in enumerate(score_array):
                     record[score] = score_row[i]
-                record[PLACE] = place_input
-                record[DATE] = date_input
-                record[RATE] = rate_input
-                record[CREATED] = datetime.retrieve_date_today()
-                record[UPDATED] = datetime.retrieve_date_today()
 
                 records.append(record)
             st.session_state.display_confirmation = True
@@ -166,7 +161,7 @@ if input_score_array is not None:
             st.session_state.display_validation_error = True
 
 
-# display notification dialog
+# display dialog
 if "display_confirmation" not in st.session_state:
     st.session_state.display_confirmation = False
 

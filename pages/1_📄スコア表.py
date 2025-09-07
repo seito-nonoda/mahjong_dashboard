@@ -1,9 +1,6 @@
 import pandas as pd
 import streamlit as st
 
-import firebase_admin
-from firebase_admin import credentials
-
 from util import db_client
 
 
@@ -65,6 +62,10 @@ for _, row in df_yomma.iterrows():
     score_record = {
         DATE_JP: row[DATE],
     }
+    # create columns of all users
+    for user in user_list:
+        score_record[user] = None
+    # set scores of parts of users
     for player, score in player_score_dict_4.items():
         player_name = df_user.loc[df_user[ID] == row[player], DISPLAY_NAME].tolist()[0]
         score = row[score]

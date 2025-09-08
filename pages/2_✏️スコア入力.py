@@ -4,6 +4,10 @@ import pandas as pd
 import streamlit as st
 
 from util import datetime, db_client, dialogs
+from util.auth_utils import check_authentication
+
+# Check authentication
+check_authentication()
 
 
 # constant values

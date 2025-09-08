@@ -5,6 +5,10 @@ import firebase_admin
 from firebase_admin import credentials
 
 from util import db_client
+from util.auth_utils import check_authentication
+
+# Check authentication
+check_authentication()
 
 
 # constant values

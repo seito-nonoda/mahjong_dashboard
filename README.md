@@ -18,7 +18,13 @@ pip install -r requirements.txt
 # 実行手順
 ## 起動したPCからのみアクセスする場合
 ### シークレット設定
-secret/の下にClud Firestoreから取得したシークレット(jsonファイル)を置く。
+#### .streamlit/secrets.toml
+.streamlit/secrets.sample.tomlをコピーして、.streamlit/secrets.tomlを作成し、各項目を設定する。
+passwordはハッシュ化したものを設定する。
+##### ハッシュ化ツール
+`python scripts/hash_password.py <password>`
+#### firestoreのシークレット
+secret/の下にCloud Firestoreから取得したシークレット(jsonファイル)を置く。
 元から格納しているsecret-template.jsonは削除する。
 ### 起動コマンド
 ```sh
@@ -30,7 +36,13 @@ http://localhost:8501
 
 ## 同じネットワーク内の他の機器からもアクセスできるようにする場合
 ### シークレット設定
-secret/の下にClud Firestoreから取得したシークレット(jsonファイル)を置く。
+#### .streamlit/secrets.toml
+.streamlit/secrets.sample.tomlをコピーして、.streamlit/secrets.tomlを作成し、各項目を設定する。
+passwordはハッシュ化したものを設定する。
+##### ハッシュ化ツール
+`python scripts/hash_password.py <password>`
+#### firestoreのシークレット
+secret/の下にCloud Firestoreから取得したシークレット(jsonファイル)を置く。
 元から格納しているsecret-template.jsonは削除する。
 ### 起動コマンド
 ```sh

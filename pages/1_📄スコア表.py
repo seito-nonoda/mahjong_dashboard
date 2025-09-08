@@ -2,6 +2,10 @@ import pandas as pd
 import streamlit as st
 
 from util import db_client
+from util.auth_utils import check_authentication
+
+# Check authentication
+check_authentication()
 
 
 # constant values

@@ -47,8 +47,8 @@ def register_yomma_record(records):
     return
 
 
-def validate_sum_of_scores():
-    non_zero_index = [i for i, row in enumerate(input_score_array) if sum(row) != 0]
+def validate_sum_of_scores(score_array):
+    non_zero_index = [i for i, row in enumerate(score_array) if abs(sum(row)) > 0.01]
     return non_zero_index
 
 
@@ -138,7 +138,7 @@ records = []
 if input_score_array is not None:
     if st.button(f"{SCORE_JP}登録"):
         # TODO: 場所が選択されていないときに確認する
-        validation_result = validate_sum_of_scores()
+        validation_result = validate_sum_of_scores(input_score_array)
         validation_OK = len(validation_result) == 0
         if validation_OK:
             for score_row in input_score_array:

@@ -24,7 +24,7 @@ DATE_JP = "日付"
 
 
 # create db client
-db = db_client.create_db_client()
+db = db_client.get_db_client()
 
 
 # read data

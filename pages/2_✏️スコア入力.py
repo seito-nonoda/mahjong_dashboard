@@ -53,7 +53,7 @@ def validate_sum_of_scores(score_array):
 
 
 # create db client
-db = db_client.create_db_client()
+db = db_client.get_db_client()
 
 
 # read user data

@@ -36,7 +36,7 @@ def register_user(record):
 
 
 # create db client
-db = db_client.create_db_client()
+db = db_client.get_db_client()
 
 
 # display title and description

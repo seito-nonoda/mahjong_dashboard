@@ -1,6 +1,6 @@
 # 動作環境
 - OS: Windows 11
-- Python: 3.9.13
+- Python: 3.12
 
 # 構築手順
 ## python周り

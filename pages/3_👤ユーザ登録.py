@@ -1,8 +1,7 @@
-import uuid
-
 import streamlit as st
 
-from util import datetime, db_client, dialogs
+from models.users import UserData, register_user
+from util import datetime, dialogs
 from util.auth_utils import check_authentication
 
 # Check authentication
@@ -10,33 +9,9 @@ check_authentication()
 
 
 # constant values
-## document name
-USER_TABLE = "users"
-## column name
-ID = "id"
-DISPLAY_NAME = "display_name"
-REGISTER_NAME = "register_name"
-ROLE = "role"
-CREATED = "created_at"
-UPDATED = "updated_at"
 ## others
 USER_JP = "ユーザ"
 
-
-# methods
-def register_user(record):
-    users_ref = db.collection(USER_TABLE)
-
-    id = str(uuid.uuid4())
-    record_ref = users_ref.document(id)
-
-    record_ref.set(record)
-
-    return
-
-
-# create db client
-db = db_client.get_db_client()
 
 
 # display title and description
@@ -65,13 +40,13 @@ display_name = st.text_input("表示名", placeholder="やまちゃん")
 
 # register user
 if register_name and display_name:
-    record = {
-        DISPLAY_NAME: display_name,
-        REGISTER_NAME: register_name,
-        ROLE: "user",
-        CREATED: datetime.retrieve_date_today(),
-        UPDATED: datetime.retrieve_date_today(),
-    }
+    record = UserData({
+        "display_name": display_name,
+        "register_name": register_name,
+        "role": "user",
+        "created_at": datetime.retrieve_date_today(),
+        "updated_at": datetime.retrieve_date_today(),
+    })
     if st.button(f"{USER_JP}登録"):
         st.session_state.display_confirmation = True
 

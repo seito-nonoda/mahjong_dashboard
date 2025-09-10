@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 
+from models.users import get_all_users
 from util import db_client
 from util.auth_utils import check_authentication
 
@@ -11,10 +12,8 @@ check_authentication()
 # constant values
 ## path
 DATA_DIR_NAME = "data"
-USER_DATA = "users.csv"
 YOMMA_DATA = "yomma.csv"
 ## document name
-USER_TABLE = "users"
 SCORE_TABLE = "yomma_scores"
 ## column name
 ID = "id"
@@ -28,15 +27,9 @@ db = db_client.get_db_client()
 
 
 # read data
-## user data
-users = db.collection(USER_TABLE).stream()
-users_array = []
-for user in users:
-    dict = user.to_dict()
-    dict[ID] = user.id
-    users_array.append(dict)
 
-df_user = pd.DataFrame(users_array)
+df_user = pd.DataFrame(get_all_users())
+
 ## score data
 yomma_scores = db.collection(SCORE_TABLE).stream()
 scores_array = []

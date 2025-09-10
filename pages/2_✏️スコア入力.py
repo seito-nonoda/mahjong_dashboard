@@ -3,6 +3,7 @@ import uuid
 import pandas as pd
 import streamlit as st
 
+from models.users import get_all_users
 from util import datetime, db_client, dialogs
 from util.auth_utils import check_authentication
 
@@ -12,7 +13,6 @@ check_authentication()
 
 # constant values
 ## document name
-USER_TABLE = "users"
 SCORE_TABLE = "yomma_scores"
 ## column name
 ID = "id"
@@ -55,16 +55,7 @@ def validate_sum_of_scores(score_array):
 # create db client
 db = db_client.get_db_client()
 
-
-# read user data
-users = db.collection(USER_TABLE).stream()
-users_array = []
-for user in users:
-    dict = user.to_dict()
-    dict[ID] = user.id
-    users_array.append(dict)
-
-df_user = pd.DataFrame(users_array)
+df_user = pd.DataFrame(get_all_users())
 
 # create user list
 user_list = df_user[DISPLAY_NAME].to_list()

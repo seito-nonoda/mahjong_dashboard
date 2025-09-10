@@ -31,4 +31,12 @@ def register_user(record: UserData) -> None:
     user_ref.set(dict(record))
 
 
-
+def get_all_users() -> list[User]:
+    users_ref = get_users_collection()
+    users = users_ref.stream()
+    users_array: list[User] = []
+    for user in users:
+        dict = user.to_dict()
+        dict["id"] = user.id
+        users_array.append(dict)
+    return users_array

@@ -22,6 +22,7 @@ UPDATED = "updated_at"
 ## others
 USER_JP = "ユーザ"
 
+
 # methods
 def register_user(record):
     users_ref = db.collection(USER_TABLE)

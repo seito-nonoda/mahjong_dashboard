@@ -27,11 +27,7 @@ YEAR = "年"
 MONTH = "月"
 DAY = "日"
 ## place options
-PLACE_LIST = [
-    "麻雀ZOO",
-    "旅行先",
-    "野々田家"
-]
+PLACE_LIST = ["麻雀ZOO", "旅行先", "野々田家"]
 ## others
 PLAYER = "player"
 SCORE = "score"
@@ -79,11 +75,11 @@ st.title(f"✏️{SCORE_JP}入力")
 
 
 # input date
-date_input = st.date_input("日付").strftime('%Y/%m/%d')
+date_input = st.date_input("日付").strftime("%Y/%m/%d")
 
 
 # input place
-place_input = st.selectbox('場所', PLACE_LIST, index=None, placeholder="場所を選択")
+place_input = st.selectbox("場所", PLACE_LIST, index=None, placeholder="場所を選択")
 
 
 # input rate
@@ -93,18 +89,16 @@ rate_input = st.number_input("レート", value=0.3, step=0.1, format="%.1f")
 # input users
 st.write("ユーザ入力")
 
-player_array = [PLAYER + str(i+1) for i in range(NUM_PLAYER)]
+player_array = [PLAYER + str(i + 1) for i in range(NUM_PLAYER)]
 player_dict = {}
 user_option = {}
 for key in player_array:
     player_dict[key] = [""]
-    user_option[key] =  st.column_config.SelectboxColumn(options=user_list)
+    user_option[key] = st.column_config.SelectboxColumn(options=user_list)
 
 df_player = pd.DataFrame(player_dict)
-df_input_user = st.data_editor(df_player,
-    num_rows="fixed",
-    column_config=user_option,
-    hide_index=True
+df_input_user = st.data_editor(
+    df_player, num_rows="fixed", column_config=user_option, hide_index=True
 )
 
 
@@ -129,7 +123,8 @@ if is_user_set:
             score_dict[user] = []
 
         df_score = pd.DataFrame(score_dict)
-        input_score_array = st.data_editor(df_score,
+        input_score_array = st.data_editor(
+            df_score,
             num_rows="dynamic",
         ).values.tolist()
 else:
@@ -137,7 +132,7 @@ else:
 
 
 # register scores
-score_array = [SCORE + str(i+1) for i in range(NUM_PLAYER)]
+score_array = [SCORE + str(i + 1) for i in range(NUM_PLAYER)]
 records = []
 if input_score_array is not None:
     if st.button(f"{SCORE_JP}登録"):
@@ -154,7 +149,9 @@ if input_score_array is not None:
                     UPDATED: datetime.retrieve_date_today(),
                 }
                 for i, player in enumerate(player_array):
-                    record[player] = df_user.loc[df_user[DISPLAY_NAME] == input_user_array[i], ID].tolist()[0]
+                    record[player] = df_user.loc[
+                        df_user[DISPLAY_NAME] == input_user_array[i], ID
+                    ].tolist()[0]
                 for i, score in enumerate(score_array):
                     record[score] = score_row[i]
 

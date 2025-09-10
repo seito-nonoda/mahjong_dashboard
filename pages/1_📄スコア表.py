@@ -57,8 +57,8 @@ user_list = df_user[DISPLAY_NAME].to_list()
 ## define dictionary
 player_score_dict_4 = {}
 for i in range(4):
-    key = "player" + str(i+1)
-    value = "score" + str(i+1)
+    key = "player" + str(i + 1)
+    value = "score" + str(i + 1)
     player_score_dict_4[key] = value
 ## create dataframe
 score_records = []
@@ -84,7 +84,7 @@ st.title("📄スコア表")
 
 
 # select user
-users_to_show = st.multiselect('表示する人を選択', options=user_list, default=user_list)
+users_to_show = st.multiselect("表示する人を選択", options=user_list, default=user_list)
 
 
 # select date
@@ -94,5 +94,7 @@ selected_date = st.selectbox("日付選択", date_options)
 
 # display table
 columns_to_show = [DATE_JP] + users_to_show
-df_score_table_date = df_score_table_yomma[df_score_table_yomma[DATE_JP] == selected_date]
+df_score_table_date = df_score_table_yomma[
+    df_score_table_yomma[DATE_JP] == selected_date
+]
 st.dataframe(df_score_table_date[columns_to_show], hide_index=True)

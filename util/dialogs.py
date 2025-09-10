@@ -29,6 +29,6 @@ def notify_registration(title):
 # notify validation error
 @st.dialog("スコアエラー")
 def notify_validation_error(validation_result):
-    validation_result_str = ", ".join(str(index+1) for index in validation_result)
+    validation_result_str = ", ".join(str(index + 1) for index in validation_result)
     st.write(f"{validation_result_str}行目の合計は0ではありません")
     st.session_state.display_validation_error = False

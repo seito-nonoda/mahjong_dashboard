@@ -7,8 +7,6 @@ def get_authenticator() -> stauth.Authenticate:
         {
             "usernames": {
                 st.secrets["auth"]["username"]: {
-                    "email": "test@example.com",
-                    "name": "Test User",
                     "password": st.secrets["auth"]["password"],
                 }
             }
@@ -29,8 +27,8 @@ def check_authentication() -> None:
     """
 
     if st.session_state.get("authentication_status") is False:
-        st.error("認証に失敗しています。メインページからログインしてください。")
+        st.error("認証に失敗しています。トップページからログインしてください。")
         st.stop()
     elif st.session_state.get("authentication_status") is None:
-        st.error("認証されていません。メインページからログインしてください。")
+        st.error("認証されていません。トップページからログインしてください。")
         st.stop()

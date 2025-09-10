@@ -17,9 +17,6 @@ if not authentication_status:
         st.warning("ユーザー名とパスワードを入力してください")
     st.stop()
 
-# Show logout button
-authenticator.logout("ログアウト")
-
 st.title("麻雀結果集計ツール")
 description = """
 ### 麻雀の結果を登録、表示するツールです
@@ -28,5 +25,10 @@ description = """
   - スコア表の形式で結果を見ることができます
 - ✏️スコア入力
   - スコアを入力することができます
+- 👤ユーザ登録
+  - ユーザを登録することができます
 """
 st.markdown(description)
+
+# Show logout button
+authenticator.logout("ログアウト")

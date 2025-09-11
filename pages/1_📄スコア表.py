@@ -14,14 +14,14 @@ check_authentication()
 ID = "id"
 DISPLAY_NAME = "display_name"
 DATE = "date"
+PLACE = "place"
 DATE_JP = "日付"
+PLACE_JP = "場所"
 
 
 # read data
 df_user = pd.DataFrame(get_all_users())
-
 df_yomma_score = pd.DataFrame(get_all_yomma_scores())
-df_yomma = pd.DataFrame(df_yomma_score)
 
 
 # create user list
@@ -37,10 +37,8 @@ for i in range(4):
     player_score_dict_4[key] = value
 ## create dataframe
 score_records = []
-for _, row in df_yomma.iterrows():
-    score_record = {
-        DATE_JP: row[DATE],
-    }
+for _, row in df_yomma_score.iterrows():
+    score_record = {DATE_JP: row[DATE], PLACE_JP: row[PLACE]}
     # create columns of all users
     for user in user_list:
         score_record[user] = None
@@ -63,12 +61,12 @@ users_to_show = st.multiselect("表示する人を選択", options=user_list, de
 
 
 # select date
-date_options = df_yomma[DATE].drop_duplicates().sort_values(ascending=False)
+date_options = df_yomma_score[DATE].drop_duplicates().sort_values(ascending=False)
 selected_date = st.selectbox("日付選択", date_options)
 
 
 # display table
-columns_to_show = [DATE_JP] + users_to_show
+columns_to_show = [PLACE_JP] + users_to_show
 df_score_table_date = df_score_table_yomma[
     df_score_table_yomma[DATE_JP] == selected_date
 ]

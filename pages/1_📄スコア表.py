@@ -67,7 +67,17 @@ selected_date = st.selectbox("日付選択", date_options)
 
 # display table
 columns_to_show = [PLACE_JP] + users_to_show
+## retrive scores of selected date
 df_score_table_date = df_score_table_yomma[
     df_score_table_yomma[DATE_JP] == selected_date
 ]
+## calculate sum of each player's score
+players_array = [
+    player for player in df_score_table_date.columns if player in user_list
+]
+total = df_score_table_date[players_array].sum()
+total = pd.DataFrame([total], columns=df_score_table_date.columns)
+total.loc[0, PLACE_JP] = "合計スコア"
+df_score_table_date = pd.concat([df_score_table_date, total])
+## render table
 st.dataframe(df_score_table_date[columns_to_show], hide_index=True)

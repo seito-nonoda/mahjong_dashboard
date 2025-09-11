@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 from models.users import get_all_users
-from util import db_client
+from models.yomma_scores import get_all_yomma_scores
 from util.auth_utils import check_authentication
 
 # Check authentication
@@ -10,11 +10,6 @@ check_authentication()
 
 
 # constant values
-## path
-DATA_DIR_NAME = "data"
-YOMMA_DATA = "yomma.csv"
-## document name
-SCORE_TABLE = "yomma_scores"
 ## column name
 ID = "id"
 DISPLAY_NAME = "display_name"
@@ -22,23 +17,10 @@ DATE = "date"
 DATE_JP = "日付"
 
 
-# create db client
-db = db_client.get_db_client()
-
-
 # read data
-
 df_user = pd.DataFrame(get_all_users())
 
-## score data
-yomma_scores = db.collection(SCORE_TABLE).stream()
-scores_array = []
-for score in yomma_scores:
-    dict = score.to_dict()
-    dict[ID] = score.id
-    scores_array.append(dict)
-
-df_yomma_score = pd.DataFrame(scores_array)
+df_yomma_score = pd.DataFrame(get_all_yomma_scores())
 df_yomma = pd.DataFrame(df_yomma_score)
 
 

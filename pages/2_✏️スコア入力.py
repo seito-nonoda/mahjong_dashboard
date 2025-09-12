@@ -1,9 +1,9 @@
-import uuid
-
 import pandas as pd
 import streamlit as st
 
-from util import datetime, db_client, dialogs
+from models.users import get_all_users
+from models.yomma_scores import register_yomma_scores
+from util import datetime, dialogs
 from util.auth_utils import check_authentication
 
 # Check authentication
@@ -12,7 +12,6 @@ check_authentication()
 
 # constant values
 ## document name
-USER_TABLE = "users"
 SCORE_TABLE = "yomma_scores"
 ## column name
 ID = "id"
@@ -36,35 +35,13 @@ NUM_PLAYER = 4
 
 
 # methods
-def register_yomma_record(records):
-    batch = db.batch()
-    for record in records:
-        id = str(uuid.uuid4())
-        record_ref = db.collection(SCORE_TABLE).document(id)
-        batch.set(record_ref, record)
-
-    batch.commit()
-    return
-
-
 def validate_sum_of_scores(score_array):
     non_zero_index = [i for i, row in enumerate(score_array) if abs(sum(row)) > 0.01]
     return non_zero_index
 
 
 # create db client
-db = db_client.create_db_client()
-
-
-# read user data
-users = db.collection(USER_TABLE).stream()
-users_array = []
-for user in users:
-    dict = user.to_dict()
-    dict[ID] = user.id
-    users_array.append(dict)
-
-df_user = pd.DataFrame(users_array)
+df_user = pd.DataFrame(get_all_users())
 
 # create user list
 user_list = df_user[DISPLAY_NAME].to_list()
@@ -173,7 +150,7 @@ if "display_validation_error" not in st.session_state:
     st.session_state.display_validation_error = False
 
 if st.session_state.display_confirmation:
-    dialogs.confirm_registration(SCORE_JP, register_yomma_record, records)
+    dialogs.confirm_registration(SCORE_JP, register_yomma_scores, records)
 
 if st.session_state.display_notification:
     dialogs.notify_registration(SCORE_JP)

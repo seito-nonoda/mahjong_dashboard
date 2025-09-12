@@ -1,15 +1,22 @@
 from pathlib import Path
+from typing import Optional
 
 import firebase_admin
-from firebase_admin import credentials, firestore
 import streamlit as st
-
+from firebase_admin import credentials, firestore
+from google.cloud import firestore as firestore_gc
 
 SECRET_DIR = "secret"
 SECRET_RULE = "mahjong"
 
 
-def create_db_client():
+db_client: Optional[firestore_gc.Client] = None
+
+def get_db_client() -> firestore_gc.Client:
+    global db_client
+    if db_client is not None:
+        return db_client
+
     # authorization
     secret_path = Path(SECRET_DIR)
     secret_file = None
@@ -32,6 +39,6 @@ def create_db_client():
         firebase_admin.initialize_app(cred)
 
     # create db client
-    db = firestore.client()
+    db_client = firestore.client()
 
-    return db
+    return db_client

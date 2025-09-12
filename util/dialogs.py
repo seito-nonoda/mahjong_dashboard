@@ -1,9 +1,11 @@
+from typing import Callable
+
 import streamlit as st
 
 
 # confirm registration
 @st.dialog("登録確認")
-def confirm_registration(title, func, arg):
+def confirm_registration[T](title: str, func: Callable[[T], None], arg: T) -> None:
     st.write(f"{title}を登録しますか？")
 
     yes, no = st.columns(2)
@@ -21,14 +23,14 @@ def confirm_registration(title, func, arg):
 
 # notify registration
 @st.dialog("登録完了")
-def notify_registration(title):
+def notify_registration(title: str) -> None:
     st.write(f"{title}登録完了")
     st.session_state.display_notification = False
 
 
 # notify validation error
 @st.dialog("スコアエラー")
-def notify_validation_error(validation_result):
+def notify_validation_error(validation_result: list[int]) -> None:
     validation_result_str = ", ".join(str(index + 1) for index in validation_result)
     st.write(f"{validation_result_str}行目の合計は0ではありません")
     st.session_state.display_validation_error = False

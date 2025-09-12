@@ -56,28 +56,34 @@ df_score_table_yomma = pd.DataFrame(score_records)
 st.title("📄スコア表")
 
 
-# select user
-users_to_show = st.multiselect("表示する人を選択", options=user_list, default=user_list)
-
-
 # select date
 date_options = df_yomma_score[DATE].drop_duplicates().sort_values(ascending=False)
 selected_date = st.selectbox("日付選択", date_options)
-
-
-# display table
-columns_to_show = [PLACE_JP] + users_to_show
 ## retrive scores of selected date
 df_score_table_date = df_score_table_yomma[
     df_score_table_yomma[DATE_JP] == selected_date
 ]
-## calculate sum of each player's score
-players_array = [
-    player for player in df_score_table_date.columns if player in user_list
+## retrive players with any score
+columns_with_any_data = df_score_table_date.columns[
+    df_score_table_date.notna().any()
+].tolist()
+users_to_show_default = [
+    player for player in columns_with_any_data if player in user_list
 ]
-total = df_score_table_date[players_array].sum()
+
+
+# select user
+users_to_show = st.multiselect(
+    "表示する人を選択", options=user_list, default=users_to_show_default
+)
+
+
+# display table
+## calculate sum of each player's score
+total = df_score_table_date[users_to_show].sum()
 total = pd.DataFrame([total], columns=df_score_table_date.columns)
 total.loc[0, PLACE_JP] = "合計スコア"
 df_score_table_date = pd.concat([df_score_table_date, total])
 ## render table
+columns_to_show = [PLACE_JP] + users_to_show
 st.dataframe(df_score_table_date[columns_to_show], hide_index=True)

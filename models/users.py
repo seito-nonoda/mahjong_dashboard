@@ -10,8 +10,8 @@ def get_users_collection():
     return db.collection(USER_TABLE)
 
 def get_user_document(user_id: str):
-    users_ref = get_users_collection()
-    return users_ref.document(user_id)
+    users_col = get_users_collection()
+    return users_col.document(user_id)
 
 class UserData(TypedDict):
     display_name: str
@@ -25,18 +25,17 @@ class User(UserData):
 
 # methods
 def register_user(record: UserData) -> None:
-    id = str(uuid.uuid4())
-    user_ref = get_user_document(id)
+    new_user_id = str(uuid.uuid4())
+    user_doc = get_user_document(new_user_id)
 
-    user_ref.set(dict(record))
+    user_doc.set(dict(record))
 
 
 def get_all_users() -> list[User]:
-    users_ref = get_users_collection()
-    users = users_ref.stream()
+    users_col = get_users_collection()
+    user_docs = users_col.stream()
     users_array: list[User] = []
-    for user in users:
-        dict = user.to_dict()
-        dict["id"] = user.id
-        users_array.append(dict)
+    for doc in user_docs:
+        user = User(**doc.to_dict(), id=doc.id)
+        users_array.append(user)
     return users_array

@@ -10,8 +10,8 @@ def get_yomma_scores_collection():
     return db.collection(YOMMA_SCORE_TABLE)
 
 def get_yomma_score_document(user_id: str):
-    users_ref = get_yomma_scores_collection()
-    return users_ref.document(user_id)
+    yomma_score_col = get_yomma_scores_collection()
+    return yomma_score_col.document(user_id)
 
 class YommaScoreData(TypedDict):
     date: str
@@ -34,21 +34,21 @@ class YommaScore(YommaScoreData):
 # methods
 def register_yomma_scores(records: Sequence[YommaScoreData]):
     db = db_client.get_db_client()
+    col = get_yomma_scores_collection()
     batch = db.batch()
     for record in records:
-        id = str(uuid.uuid4())
-        record_ref = db.collection(YOMMA_SCORE_TABLE).document(id)
-        batch.set(record_ref, dict(record))
+        new_id = str(uuid.uuid4())
+        doc = col.document(new_id)
+        batch.set(doc, dict(record))
 
     batch.commit()
     return
 
 def get_all_yomma_scores() -> list[YommaScore]:
-    yomma_scores_ref = get_yomma_scores_collection()
-    scores = yomma_scores_ref.stream()
+    yomma_scores_col = get_yomma_scores_collection()
+    yomma_score_docs = yomma_scores_col.stream()
     scores_array: list[YommaScore] = []
-    for score in scores:
-        dict = score.to_dict()
-        dict["id"] = score.id
-        scores_array.append(dict)
+    for doc in yomma_score_docs:
+        yomma_score = YommaScore(**doc.to_dict(), id=doc.id)
+        scores_array.append(yomma_score)
     return scores_array

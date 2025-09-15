@@ -5,13 +5,6 @@ from util import db_client
 
 YOMMA_SCORE_TABLE = "yomma_scores"
 
-def get_yomma_scores_collection():
-    db = db_client.get_db_client()
-    return db.collection(YOMMA_SCORE_TABLE)
-
-def get_yomma_score_document(user_id: str):
-    yomma_score_col = get_yomma_scores_collection()
-    return yomma_score_col.document(user_id)
 
 class YommaScoreData(TypedDict):
     date: str
@@ -31,7 +24,16 @@ class YommaScoreData(TypedDict):
 class YommaScore(YommaScoreData):
     id: str
 
+
 # methods
+def get_yomma_scores_collection():
+    db = db_client.get_db_client()
+    return db.collection(YOMMA_SCORE_TABLE)
+
+def get_yomma_score_document(user_id: str):
+    yomma_score_col = get_yomma_scores_collection()
+    return yomma_score_col.document(user_id)
+
 def register_yomma_scores(records: Sequence[YommaScoreData]):
     db = db_client.get_db_client()
     col = get_yomma_scores_collection()

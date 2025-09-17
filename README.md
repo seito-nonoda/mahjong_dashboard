@@ -24,8 +24,7 @@ passwordはハッシュ化したものを設定する。
 ##### ハッシュ化ツール
 `python scripts/hash_password.py <password>`
 #### firestoreのシークレット
-secret/の下にCloud Firestoreから取得したシークレット(jsonファイル)を置く。
-元から格納しているsecret-template.jsonは削除する。
+Cloud Firestoreからシークレット(jsonファイル)を取得し、toml形式に変換した上で、.streamlit/secrets.tomlに記載する。
 ### 起動コマンド
 ```sh
 source .venv/Scripts/activate
@@ -42,8 +41,7 @@ passwordはハッシュ化したものを設定する。
 ##### ハッシュ化ツール
 `python scripts/hash_password.py <password>`
 #### firestoreのシークレット
-secret/の下にCloud Firestoreから取得したシークレット(jsonファイル)を置く。
-元から格納しているsecret-template.jsonは削除する。
+Cloud Firestoreからシークレット(jsonファイル)を取得し、toml形式に変換した上で、.streamlit/secrets.tomlに記載する。
 ### 起動コマンド
 ```sh
 source .venv/Scripts/activate

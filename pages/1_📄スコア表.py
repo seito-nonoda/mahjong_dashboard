@@ -15,8 +15,7 @@ ID = "id"
 DISPLAY_NAME = "display_name"
 DATE = "date"
 PLACE = "place"
-DATE_JP = "日付"
-PLACE_JP = "場所"
+NO = "No"
 
 
 # read data
@@ -38,10 +37,10 @@ for i in range(4):
 ## create dataframe
 score_records = []
 for _, row in df_yomma_score.iterrows():
-    score_record = {DATE_JP: row[DATE], PLACE_JP: row[PLACE]}
+    score_record = {DATE: row[DATE], PLACE: row[PLACE]}
     # create columns of all users
-    for user in user_list:
-        score_record[user] = None
+    for user_name in user_list:
+        score_record[user_name] = None
     # set scores of parts of users
     for player, score in player_score_dict_4.items():
         player_name = df_user.loc[df_user[ID] == row[player], DISPLAY_NAME].tolist()[0]
@@ -60,9 +59,9 @@ st.title("📄スコア表")
 date_options = df_yomma_score[DATE].drop_duplicates().sort_values(ascending=False)
 selected_date = st.selectbox("日付選択", date_options)
 ## retrive scores of selected date
-df_score_table_date = df_score_table_yomma[
-    df_score_table_yomma[DATE_JP] == selected_date
-]
+df_score_table_date = df_score_table_yomma[df_score_table_yomma[DATE] == selected_date]
+## add No
+df_score_table_date[NO] = pd.RangeIndex(start=1, stop=len(df_score_table_date) + 1)
 ## retrive players with any score
 columns_with_any_data = df_score_table_date.columns[
     df_score_table_date.notna().any()
@@ -78,12 +77,20 @@ users_to_show = st.multiselect(
 )
 
 
-# display table
+# display place
+place = df_score_table_date.iloc[0][PLACE]
+st.text(f"場所：{place}")
+
+
+# display score table
+## render table
+columns_to_show = [NO] + users_to_show
+st.dataframe(df_score_table_date[columns_to_show], hide_index=True)
+
+
+# display total table
+st.text("合計スコア")
 ## calculate sum of each player's score
 total = df_score_table_date[users_to_show].sum()
-total = pd.DataFrame([total], columns=df_score_table_date.columns)
-total.loc[0, PLACE_JP] = "合計スコア"
-df_score_table_date = pd.concat([df_score_table_date, total])
-## render table
-columns_to_show = [PLACE_JP] + users_to_show
-st.dataframe(df_score_table_date[columns_to_show], hide_index=True)
+df_total = pd.DataFrame([total], columns=df_score_table_date.columns)
+st.dataframe(df_total[users_to_show], hide_index=True)
